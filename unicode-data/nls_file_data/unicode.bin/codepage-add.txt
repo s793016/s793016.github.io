@@ -1,0 +1,145 @@
+主題(Subject): 有關於 Unicode.bin 表格3與4，00h與02h的問題
+寄信人(From): Alextwl <alextwl@yahoo.com.tw>
+日期: Tue, 17 Jun 2003 17:45:00 +0800
+收信人(To): Witch Five <s793016@gcn.net.tw>
+
+Dear Witch Five:
+
+有關於 Unicode.bin 表格3與4，00h與02h的問題，因為我自己也是一樣找不出它
+的規則所在，所以只好厚臉皮詢問那份文件的原作者囉。但還蠻幸運的，不過因為
+之前沒做過這方面的研究，所以不太懂，看樣子有點複雜就是了，我將信轉給您，
+有任何問題了話再來討論吧！希望這會對您有所幫助。 ^_^
+
+
+Date: Sun, 15 Jun 2003 10:20:12 +0800
+From: Alextwl <alextwl@yahoo.com.tw>
+To:  geoffch@ozemail.com.au
+Subject: Some questions about UNICODE.BIN file format
+
+Dear Geoff Chappell:
+
+Hello, nice to meet you.
+
+I come from Taiwan, and I'm trying to fix Traditional Chinese(BIG5,
+Codepage 950) <-> Unicode Conversion Map to the correct section on
+Microsoft Windows 9x system.
+
+Fortunately, after reading your article "Code Pages and the Windows 95
+IFSMGR", I am going to finish the work! But, I met some questions when I
+read your article about "UNICODE.BIN File Format"...
+
+The UNICODE.BIN have four tables, but I don't understand that the "Table
+3. Range Definition for Conversion from Unicode " and "Table 4. Range
+Definition for Conversion to Unicode "'s fields mean.
+
+----
+00h offset from start of table to definition for a lower range; or zero
+02h offset from start of table to definition for a higher range; or zero
+----
+
+If I write "zero" into the fields, all of BIG5 character will be
+displayed as " __ " character, and I didn't find the rules about these
+fields.
+
+Please help me to solve the questions, I sincerely hope you'll answer
+the questions for me. Thank you very much!
+
+Best Regard.
+
+Alextwl
+
+--
+National Chung Hsing Senior High School, Taiwan, R.O.C.
+Computer Science Club, Chairman
+alextwl, Tang Wei-li.
+
+mailto:alextwl@yahoo.com.tw
+http://www.chsh.ntct.edu.tw/
+==
+Date: Tue, 17 Jun 2003 10:47:41 +1000
+From: "Geoff Chappell" <geoffch@ozemail.com.au>
+To: "Alextwl" <alextwl@yahoo.com.tw>
+Subject: RE: Some questions about UNICODE.BIN file format
+
+Dear alextwl,
+
+Thank you for your enquiry. I should be happy to help, but please bear
+in mind that it's nearly six years since I last looked at this topic.
+So, what I write to you now is just my own reading of the document.
+
+A UNICODE.BIN file may support multiple code pages. For each code page,
+there is a table for converting from Unicode and another for converting
+to Unicode.
+
+The table for converting from Unicode is a set of structures whose form
+is shown in Table 3. The table for converting to Unicode is a set of
+structures whose form is shown in Table 4.
+
+Each of these structures defines a range of characters for which
+conversion is valid. For instance, when converting from Unicode to some
+code page, suppose that only the following characters have valid
+conversions:
+
+  0000h to 0123h
+  1000h to 1234h
+  2000h to 2345h
+  3000h to 3456h
+  4000h to 4567h
+  5000h to 5678h
+
+For each of these 6 ranges, there would be a range definition, as shown
+in Table 3. Let's number them as range definitions 1 to 6. The aim is to
+build the links to upper and lower ranges to make a roughly balanced
+tree. The following diagram shows how this would work, with lower ranges
+at the top.
+
+                               range 1
+                             /
+                     range 2
+                   /
+Table 2 -> range 3             range 4
+                   \         /
+                     range 5
+                             \ range 6
+
+
+In range 5, the field at offset 00h would show the way to range 4 and
+the field at offset 02h would show the way to range 6.
+
+But in range 2, the field at offset 00h would show the way to range 1,
+but the field at offset 02h would be zero, because there is no higher
+range (that will not already have been found earlier in the tree).
+
+In range 1, both field at offsets 00h and 02h will be zero. If your
+navigation of the tree gets this far and you haven't found a range that
+includes the character you want to convert, then the character is
+invalid (and will be converted by default to an underscore).
+
+> ----
+> 00h offset from start of table to definition for a lower range; or zero
+> 02h offset from start of table to definition for a higher range; or zero
+> ----
+>
+> If I write "zero" into the fields, all of BIG5 character will be
+> displayed as " __ " character, and I didn't find the rules about these
+> fields.
+
+
+If you write zero into the fields, you are saying that there are no
+lower or higher ranges. If you do this in the first range definition,
+then the only characters you can convert to or from Unicode are the ones
+covered by that first range definition.
+
+When I wrote the document, I imagined it would be used by people to
+interpret a UNICODE.BIN file that they already have, such as supplied
+with Windows. If you have trouble understanding the document, you can
+ask me to explain, of course, but you can also try to match its
+descriptions against what you see in a real UNICODE.BIN file.
+
+Geoff.
+
+
+--
+Alextwl
+http://www.histcham.org/
+mailto:alextwl@yahoo.com.tw

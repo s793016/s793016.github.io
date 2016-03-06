@@ -1,0 +1,26 @@
+  Hi there,
+  welcome on CyberSnake's FTP server
+  
+
+  if you are new here create a folder in upload with your name and 
+  put in your file list or give message !
+  On ICQ: 126296514
+  e-mail: info@cybersnake.homip.net 
+  !! if you are logged into my server take notice of server messages !!
+
+ !! for all useres who have no own FTP server to trade !!
+    any time you login here please take a look in your home directory
+    for infos or requests of mine and if you think you have some
+    interessting sounds for me, load up some trial :) 
+   
+   
+    If you got an account here you're able to login 2 times to up- and download simultaneous.
+    
+    !!IMPORTANT!!
+    I've created a second ftp server at port 2121 for upload only (this is because uploading at port 21 decreases the speed for downloads)
+    - login anonymus and use your home directory folder for uploads at port 2121 !!
+
+   enjoy the assortment of music here and
+   much sucess by downloading :)
+
+ 

@@ -1,0 +1,75 @@
+@echo off
+if not exist lotto.dat quit
+
+setlocal
+
+for %a in (@lotto.dat) do gosub sub1
+
+cls /c
+
+text
+
+´ֱ  ¼ֶ  ¸¹                  ½X  ¯S
+======  ======================  ==
+endtext
+
+type lotto.dat
+screen 19 0
+
+do a = 0 to 5
+ do b = 1 to 7
+  iff %@eval[7*%a+%b] ge 10 then
+   set x=1
+  else
+   set x=0
+  endiff
+  switch %@len[%[%@eval[7*%a+%b]]]
+  case 3
+   set z=2
+  case 2
+   set z=1
+  case 1
+   set z=0
+  case 0
+   set z=%@eval[7*%a+%b]
+   set %z=0
+   set z=0
+  endswitch
+  set c=%@eval[40+6*(%b-1)]
+  scrput %@eval[%a*3+1] %@eval[%c-%x] bri mag on bla %@eval[7*%a+%b]
+  scrput %@eval[%a*3+2] %@eval[%c-%z] bri yel on bla %[%@eval[7*%a+%b]]
+ enddo
+enddo
+
+set a=שששש
+set b=¢w¢w
+
+scrput 0 35 bri whi on bla שת%aשח%aשח%aשח%aשח%aשח%aשח%aשû
+for %z in (0 1) do (for /l %x in (%@eval[1+%z],3,%@eval[16+%z]) do ( %=
+ for /l %y in (41,6,71) do scrput %x %y bri whi on bla ¢x))
+for /l %x in (3,3,15) do %=
+ scrput %x 35 bri whi on bla שע%b¢q%b¢q%b¢q%b¢q%b¢q%b¢q%bשפ
+scrput 18 35 bri whi on bla שü%aשם%aשם%aשם%aשם%aשם%aשם%aש‎
+vscrput 1 35 bri whi on bla %@repeat[%@char[249],17]
+vscrput 1 36 bri whi on bla ררעררעררעררעררער%@char[248]
+vscrput 1 77 bri whi on bla %@repeat[%@char[249],17]
+vscrput 1 78 bri whi on bla ררפררפררפררפררפר%@char[248]
+endlocal
+keystack Alt-E A Ctrl-C Shift-Right
+copy /qhz clip: LOTTO.
+quit
+
+:sub1
+if not "%@left[1,%a]" == "0" return
+set c=0
+for %b in (%a) do gosub sub2
+return
+
+:sub2
+set c=%@inc[%c]
+iff %c gt 1 then
+ set x=1
+ if %c = 8 set x=0.5
+ set %b=%@eval[%x+%[%b]]
+endiff
+return

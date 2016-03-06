@@ -1,0 +1,394 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+	<TITLE>NLS-file Structure</TITLE>
+	<META HTTP-EQUIV="Content-Type" content="text/html; charset=ISO-8859-1">
+</HEAD>
+
+<BODY BACKGROUND="../img/fontsbgr.gif" BGCOLOR="Silver">
+<P><table cellspacing="12"><tr><td><A HREF="../rus/nls.htm">Russian version here</A><br>
+<FONT COLOR="Maroon">English may be very broken. Sorry.</FONT>
+</td>
+<td><a href="http://shlimazl.nm.ru/eng/nls.htm">Mirror (Newmail)</a></td>
+<td><a href="http://webcenter.ru/~kazarn/eng/nls.htm">Mirror (ROL)</a></td>
+</tr></table></P>
+
+<P><CENTER><H3>Structure of files <A HREF="#w95">CP_nnnn.NLS</A>
+in <B>Windows'95/'98/ME</B><BR>
+and files 
+<A HREF="#nt4">C_nnnn.NLS</A> 
+in <B>Windows NT4/W2K/XP</B></H3></CENTER></P>
+<BR>
+<FONT SIZE="-1"><I>20-jan-2002
+<A HREF="mailto:shlimazl@mtu-net.ru">
+Konstantin Kazarnovsky</A></I></FONT>
+<P>The described structures concern first of all
+to the one-byte codings, though for two-byte (hieroglyphic)
+all looks very similar.
+<P>(Hexadecimals are stored in the file in order lower byte first)</P><BR>
+<CENTER><H4><A NAME="w95">CP_nnnn.NLS</A></H4></CENTER>
+<UL>
+<LI><B>Table header</B>
+<BR>In table header are specified offsets (2 bytes, counted in 2-byte words)
+from a beginning of a file prior to the beginning
+of tables. Not about all tables (or other values) it was
+possible to find out their sense.<BR><BR>
+
+<TABLE BORDER=2 ALIGN="CENTER" VALIGN="MIDDLE">
+	<CAPTION>Table header</CAPTION>
+
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TH ALIGN="CENTER" VALIGN="MIDDLE">Offset</TH>
+	<TH>Value</TH>
+	<TH>Table size<BR>in bytes</TH>
+	<TH>Comment</TH>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">00</TD>
+	<TD>0x0000<BR>0x0001</TD>
+	<TD>&nbsp;</TD>
+	<TD>One-byte encoding (SBCS)<BR>
+	Two-byte encoding (DBCS)</TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">04</TD>
+	<TD>0x0026</TD>
+	<TD>&nbsp;</TD>
+	<TD>&nbsp;</TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">08</TD>
+	<TD>0x0031 </TD>
+	<TD>512</TD>
+	<TD><A HREF="#cptou">Codepage to Unicode</A></TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">0C</TD>
+	<TD>0x0131 </TD>
+	<TD>512</TD>
+	<TD><A HREF="#cptoudos">Codepage to Unicode<BR>
+	(for OEM/DOS with pseudographic)</A></TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">10</TD>
+	<TD>0x0131 </TD>
+	<TD>512</TD>
+	<TD>Codepage to Unicode<BR>
+	(additional part for DBCS)</TD>
+</TR><TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">14</TD>
+	<TD>0x0131</TD>
+	<TD>Variable</TD>
+	<TD><A HREF="#utocp">Unicode to Codepage</A></TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">18</TD>
+	<TD>&nbsp;</TD>
+	<TD>256</TD>
+	<TD>To_Upper (Uppercase letters)</TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">1C </TD>
+	<TD>&nbsp;</TD>
+	<TD>256</TD>
+	<TD>To_Lower (Lowercase letters)</TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">30</TD>
+	<TD>&nbsp;</TD>
+	<TD>256</TD>
+	<TD>No_Accents (Without diacritical marks)</TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">34</TD>
+	<TD>&nbsp;</TD>
+	<TD>1024</TD>
+	<TD>Sort (4-byte values for sorting)</TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">38</TD>
+	<TD>&nbsp;</TD>
+	<TD>0 or 6 or 18</TD>
+	<TD>Unknown table</TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">3C</TD>
+	<TD>&nbsp;</TD>
+	<TD>512</TD>
+	<TD>Char Types - 1st word</TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">40</TD>
+	<TD>&nbsp;</TD>
+	<TD>512</TD>
+	<TD>Char Types - 2nd word</TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">44</TD>
+	<TD>&nbsp;</TD>
+	<TD>512</TD>
+	<TD>Char Types - 3rd word</TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">48</TD>
+	<TD>&nbsp;</TD>
+	<TD>Variable</TD>
+	<TD>Exceptions (differences in miscellaneous languages)</TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">4C</TD>
+	<TD>0x0001<BR>0x0002</TD>
+	<TD>&nbsp;</TD>
+	<TD>One-byte encoding (SBCS)<BR>
+	Two-byte encoding (DBCS)</TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">4E</TD>
+	<TD>0x003F</TD>
+	<TD>2 bytes</TD>
+	<TD>4 times<BR>
+	substitution characters (mainly &quot;?&quot;)<BR>
+	fot miscellaneous purposes ???</TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">56</TD>
+	<TD>0x0000</TD>
+	<TD>2 bytes</TD>
+	<TD>6 times<BR>
+	substitution characters for<BR>
+	double-byte encodings ???</TD>
+</TR>
+</TABLE>
+
+<BR><BR>
+<LI><A NAME="cptou"><B>Codepage definition (Codepage to Unicode)</B></A>
+<BR>The table of fixed length (512 bytes), containing definition
+of the codepage (for the one-byte encodings): position
+<I>N</I> (from 0 up to 255) contains Unicode-value (2 bytes)
+for an element with a code <I>N</I>.<BR>
+<LI><A NAME="cptoudos">If an NLS-file corresponds to a Codepage for one of
+(national) versions DOS (<B>OEM-Codepage</B>)</A>, then it contain
+a second variant of the table Codepage to Unicode
+(for displaing in DOS-Box etc.),
+in which to the control characters (first 32 items in the Codepage)
+correspond Unicode values of their standard pseudographic
+images (&quot;smiles&quot;),
+see <A HREF="../img/ascii_.gif">the picture</A>.<BR><BR>
+<LI><A NAME="utocp"><B>
+Mapping from Unicode into the codepage (Unicode to Codepage)</B></A>
+<BR>The table of variable length builded as follows:<BR>
+<OL>
+<LI>4 hexadecimal digits of initial Unicode are divided into three groups -
+<B>U+<FONT COLOR="Blue">XX</FONT><FONT COLOR="Green">Y</FONT><FONT COLOR="Red">Z</FONT></B>.
+
+<LI>In the table is searched the two-byte word on (word) offset
+<B><FONT COLOR="Blue">XX</FONT></B> (on byte offset 2*XX),
+its value is <B>0x<FONT COLOR="Maroon">MM</FONT></B>
+(&gt;= 0x0100, and the value that equal to 0x0100
+really means absence in this block
+of the representatives of code page and code conversion in
+the &quot;interrogative mark&quot;).
+
+<LI>In the table is searched the two-byte word on (word) offset
+   <B>0x<FONT COLOR="Maroon">MM</FONT>+<FONT COLOR="Green">Y</FONT></B>,
+   its value is <B>0x<FONT COLOR="Maroon">NN</FONT></B>.
+
+<LI>In the table on (word) offset
+	<B>0x<FONT COLOR="Maroon">NN</FONT>+<FONT COLOR="Red">Z</FONT></B>
+	is searched the two-byte word, which is the required value.
+	(The first block of values consists from 0x003F,
+	&quot;interrogative marks&quot;.) 
+</OL>
+
+</UL>
+
+<HR SIZE="5">
+<CENTER><H4><A NAME="nt4">C_nnnn.NLS</A></H4></CENTER>
+<BR>The structure of NLS-file in NT is much easier, than in Windows'95/'98: there are less data and there is no compression of table
+<B>Unicode to Codepage</B>.
+
+<UL>
+<LI><B>Table header</B>
+<BR>Contains offset up to single area of the code conversion tables,
+and also codepage number (<I>nnnn</I>) and some fields of not clear
+sense.
+<BR><BR>
+<TABLE BORDER=2 ALIGN="CENTER" VALIGN="MIDDLE">
+	<CAPTION>Table header</CAPTION>
+
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TH ALIGN="CENTER" VALIGN="MIDDLE">Offset</TH>
+	<TH>Value</TH>
+	<TH>Table size<BR>in bytes</TH>
+	<TH>Comment</TH>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">00</TD>
+	<TD>0x000D</TD>
+	<TD>Variable</TD>
+	<TD><A HREF="#cptount">Codepage to Unicode</A>
+	and <BR><A HREF="#utocpnt">Unicode to Codepage</A></TD>
+</TR>
+
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">02</TD>
+	<TD>&nbsp;</TD>
+	<TD>2 bytes</TD>
+	<TD>Codepage number</TD>
+</TR>
+
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">04</TD>
+	<TD>0x0001<BR>0x0002</TD>
+	<TD>2 bytes</TD>
+	<TD>One-byte encoding (SBCS)<BR>
+	Two-byte encoding (DBCS)</TD>
+</TR>
+
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">06</TD>
+	<TD>0x003F</TD>
+	<TD>2 bytes</TD>
+	<TD>4 times</TD>
+</TR>
+
+</TABLE><BR><BR>
+
+<TABLE BORDER=2 ALIGN="CENTER" VALIGN="MIDDLE">
+	<CAPTION>Code conversion table</CAPTION>
+
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TH ALIGN="CENTER" VALIGN="MIDDLE">Offset</TH>
+	<TH>Value</TH>
+	<TH>Table size<BR>in bytes</TH>
+	<TH>Comment</TH>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">00</TD>
+	<TD>0x0103 (ANSI)<BR>0x0203 (OEM)</TD>
+	<TD>&nbsp;</TD>
+	<TD>The size of the table(s)<BR>Codepage to Unicode in words</TD>
+	</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">02</TD>
+	<TD>&nbsp;</TD>
+	<TD>512</TD>
+	<TD><A HREF="#cptount">Codepage to Unicode</A></TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">202</TD>
+	<TD>&nbsp;</TD>
+	<TD>512</TD>
+	<TD><A HREF="#cptount">Codepage to Unicode (OEM/DOS)</A></TD>
+</TR>
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">202 (ANSI)<BR>402 (OEM)</TD>
+	<TD>&nbsp;</TD>
+	<TD>6</TD>
+	<TD>Reserve</TD>
+</TR>
+
+<TR ALIGN="CENTER" VALIGN="MIDDLE">
+	<TD ALIGN="CENTER" VALIGN="MIDDLE">208 (ANSI)<BR>408 (OEM)</TD>
+	<TD>&nbsp;</TD>
+	<TD>65 536 bytes</TD>
+	<TD><A HREF="#utocpnt">Unicode to Codepage</A></TD>
+</TR>
+</TABLE><BR><BR>
+
+<LI><A NAME="cptount"><B>Codepage definition (Codepage to Unicode)</B></A>
+<BR>The table of length 512 bytes (+ 6 bytes reserve ?),
+containing definition of the codepage (for the one-byte encodings):
+position <I>N</I> (from 0 up to 255) contains Unicode-value (2 bytes)
+for an element with a code <I>N</I>.
+<BR>If an NLS-file corresponds to a Codepage for one of
+(national) versions DOS (OEM-Codepage), then it contain
+a second variant of the table Codepage to Unicode
+(for displaing in DOS-Box etc.),
+in which to the control characters (first 32 items in the Codepage)
+correspond Unicode values of their standard pseudographic
+images (&quot;smiles&quot;),
+see <A HREF="../img/ascii_.gif">the picture</A>. 
+
+<BR><BR>
+<LI><A NAME="utocpnt"><B>Mapping from Unicode into the codepage
+(Unicode to Codepage)</B></A>
+<BR>The one-byte table of fixed length 65536=0x10000 byte beginning
+after table Codepage to Unicode.
+For Unicode U+XXXX there corresponds one byte
+in the table at offset XXXX, that contains the value
+in the code page. 
+<BR>
+
+</UL>
+
+<HR SIZE="5">
+It's made STL-file <A HREF="../nls_stl.zip">
+<IMG SRC="../img/dloadf.gif" WIDTH=20 HEIGHT=29 BORDER=0>
+nls_stl.zip</A> with descriptions for Structure viewer
+<A HREF="ftp://ftp.kemsc.ru/pub/sen/">StructLook (v4.20)</A>
+from Eugene Suslikov.
+
+<HR SIZE="5">
+<P>I am grateful to:<BR>
+<I><A HREF="mailto:ned@ned.msk.ru">Evgeny Nedelko</A></I>
+for the important specifications and additions on structure
+of files CP_nnnn.NLS (and he, in turn, referred on Anton Kovalev);<BR>
+<I>Alexander Smishlajev (2:5100/14)</I>
+for the important observations and specifications on structure
+of files C_nnnn.NLS and first version of the <B>nls.stl</B>.
+<BR><BR>
+<BR><BR>
+
+<table border="0" cellpadding="10" align="left">
+<tr>
+<td>&nbsp;
+<!-- HotLog -->
+<script language="javascript">
+hotlog_js="1.0";hotlog_d=document; hotlog_n=navigator;hotlog_rn=Math.random();
+hotlog_n_n=(hotlog_n.appName.substring(0,3)=="Mic")?0:1;
+hotlog_r=""+hotlog_rn+"&s=10815&r="+escape(hotlog_d.referrer)+"&pg="+
+escape(window.location.href);
+hotlog_d.cookie="hotlog=1"; hotlog_r+="&c="+(hotlog_d.cookie?"Y":"N");
+hotlog_d.cookie="hotlog=1; expires=Thu, 01-Jan-70 00:00:01 GMT"</script>
+<script language="javascript1.1">
+hotlog_js="1.1";hotlog_r+="&j="+(navigator.javaEnabled()?"Y":"N")</script>
+<script language="javascript1.2">
+hotlog_js="1.2";hotlog_s=screen;
+hotlog_r+="&wh="+hotlog_s.width+'x'+hotlog_s.height+"&px="+((hotlog_n_n==0)?
+hotlog_s.colorDepth:hotlog_s.pixelDepth)</script>
+<script language="javascript1.3">hotlog_js="1.3"</script>
+<script language="javascript">hotlog_r+="&js="+hotlog_js;
+hotlog_d.write("<img src=\"http://hit.hotlog.ru/cgi-bin/hotlog/count?"+
+hotlog_r+"&\" border=0 width=1 height=1>")</script>
+<noscript><img src="http://hit.hotlog.ru/cgi-bin/hotlog/count?s=10815" border=0 
+width=1 height=1></noscript>
+<!-- /HotLog -->
+</td>
+
+<td><!-- SpyLOG v2 f:0211 -->
+<script language="javascript">
+u="u983.49.spylog.com";d=document;nv=navigator;na=nv.appName;p=1;
+bv=Math.round(parseFloat(nv.appVersion)*100);
+n=(na.substring(0,2)=="Mi")?0:1;rn=Math.random();z="p="+p+"&rn="+rn;y="";
+y+="<a href='http://"+u+"/cnt?f=3&p="+p+"&rn="+rn+"' target=_blank>";
+y+="<img src='http://"+u+"/cnt?"+z+"&r="+escape(d.referrer)+"&pg="+escape(window.location.href)+"' border=0  width=88 height=31 alt='SpyLOG'>";
+y+="</a>"; d.write(y);if(!n) { d.write("<"+"!--"); }//--></script><noscript>
+<a href="http://u983.49.spylog.com/cnt?f=3&p=1" target="_blank">
+<img src="http://u983.49.spylog.com/cnt?p=1" alt="SpyLOG" border="0"  width=88 height=31 >
+</a></noscript><script language="javascript1.2">
+<!-- if(!n) { d.write("--"+">"); }//-->
+</script>
+<!-- SpyLOG  -->
+</td></tr>
+</table>
+
+<H4 ALIGN="CENTER">
+<A HREF="fonts_app.htm#nls">
+<IMG SRC="../img/arrowhome.gif" WIDTH=20 HEIGHT=22 BORDER=0 ALT="arrowhome">
+&nbsp;Return to text</A></H4>
+<P>&nbsp;</P>
+
+</BODY>
+</HTML>

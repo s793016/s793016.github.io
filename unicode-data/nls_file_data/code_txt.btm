@@ -1,0 +1,135 @@
+@echo off
+setlocal
+loadbtm on
+setdos /x-45678
+
+if defined cpath unset cpath
+iff exist cp_950.nls then
+ set cpath=.\
+elseiff exist %@path[%_batchname]cp_950.nls then
+ set cpath=%@path[%_batchname]
+elseiff exist %windir\system\cp_950.nls then
+ set cpath=%windir\system\
+elseiff exist %winbootdir\system\cp_950.nls then
+ set cpath=%winbootdir\system\
+else
+ goto err_4
+endiff
+
+switch %@upper[%1]
+case B
+ set code_def=big5
+case U
+ set code_def=unicode
+default
+ goto err_1
+endswitch
+
+switch %@len[%2]
+case 0
+ goto err_2
+case 1
+ goto err_7
+case 2
+case 4
+default
+ goto err_3
+endswitch
+
+set fileid=%@fileopen[%cpath%cp_950.nls, read, b]
+if %fileid == -1 goto err_5
+
+iff %@len[%2] == 2 then
+ gosub getcode
+else
+ set code_l=%@convert[16,10,%@left[2,%2]]
+ set code_r=%@convert[16,10,%@right[2,%2]]
+endiff
+goto %code_def
+
+:getcode
+set code_l=%@ascii[%@left[1,%2]]
+set code_r=%@ascii[%@right[1,%2]]
+return
+
+:big5
+set bcl=%@convert[10, 16, %code_l]
+set bcr=%@format[02,%@convert[10, 16, %code_r]]
+if %code_l lt 129 .OR. %code_l == 255 goto err_6
+if %code_r lt 64 .OR. %code_r == 255 goto err_6
+if %code_r gt 126 .AND. %code_r lt 161 goto err_6
+set pt=%@fileseek[%fileid, %@eval[1250+(%code_l-129)*512+(%code_r-64)*2], 0]
+set ucr=%@format[02,%@convert[10, 16, %@ascii[%@fileread[%fileid, 1]]]]
+set ucl=%@convert[10, 16, %@ascii[%@fileread[%fileid, 1]]]
+goto display
+
+:unicode
+set ucl=%@convert[10, 16, %code_l]
+set ucr=%@format[02,%@convert[10, 16, %code_r]]
+set pt=%@fileseek[%fileid,%@eval[65634+%code_l*2],0]
+gosub get_cp_code
+echos mm=%@convert[10,16,%m], mp=%@convert[10,16,%pt]
+set pt=%@fileseek[%fileid,%@eval[65634+(%m+%@convert[16,10,%@left[1,%ucr]])*2],0]
+gosub get_cp_code
+echos , nn=%@convert[10,16,%m], np=%@convert[10,16,%pt]
+set pt=%@fileseek[%fileid,%@eval[65634+(%m+%@convert[16,10,%@right[1,%ucr]])*2],0]
+set bcr=%@format[02,%@convert[10,16,%@ascii[%@fileread[%fileid,1]]]]
+set bcl=%@convert[10,16,%@ascii[%@fileread[%fileid,1]]]
+echo , pt=%@convert[10,16,%pt]
+goto display
+
+:get_cp_code
+set m=%@format[02,%@convert[10,16,%@ascii[%@fileread[%fileid,1]]]]
+set m=%@convert[16,10,%@convert[10,16,%@ascii[%@fileread[%fileid,1]]]%m]
+return
+
+:display
+set fileid=%@fileclose[%fileid]
+echo.
+echo 關於「%2」：
+echo.
+echo Big-5 內碼為「%@format[04,%bcl%%bcr%]」，
+echo Unicode 碼為「%@format[04,%ucl%%ucr%]」。
+echo.
+echo PS: 若以上其中一碼為 003F，則此字在另一字集中並無對應!!
+echo.
+goto quitend
+
+:err_1
+text
+請指定此字之內碼種類!!
+
+B 或 b：Big-5 內碼
+U 或 u：Unicode 碼
+endtext
+goto quitend
+
+:err_2
+echo 未指定可供查詢之字!!
+goto quitend
+
+:err_3
+echo 一次只能查一字!!
+goto quitend
+
+:err_4
+echo CP_950.NLS 不存在 (目前目錄、本程式所在目錄、%%windir%%\system\、
+%%winbootdir%%\system\), 故無法查詢!!
+goto quitend
+
+:err_5
+echo CP_950.NLS 無法開啟, 故無法查詢!!
+goto quitend
+
+:err_6
+echo 您輸入的不是 Big-5 碼的字, 故無法查詢!!
+goto quitend
+
+:err_7
+echo 不接受 ASCII 字碼查詢!!
+goto quitend
+
+:quitend
+setdos /x0
+loadbtm off
+endlocal

@@ -1,0 +1,125 @@
+@echo off
+if not %@eval[1+1] == 2 goto none4dos
+
+setlocal
+loadbtm on
+setdos /x-45678
+if not %_cmdproc == TCMD32 .AND. not %_4ver GE 3.01 goto err_7
+
+:-----------------------------------------------------------------------------:
+: 查詢內碼程式 v0.5                    by  Witch - Five (s793016), 04/20/2002 :
+:-----------------------------------------------------------------------------:
+
+iff exist %_winsysdir\cp_950.nls then
+ set cpath=%_winsysdir\
+elseiff exist %@path[%_batchname]cp_950.nls then
+ set cpath=%@path[%_batchname]
+elseiff exist cp_950.nls then
+ set cpath=.\
+else
+ goto err_4
+endiff
+
+switch %@upper[%1]
+case B
+ set code_def=Big5
+case U
+ set code_def=Unicode
+default
+ goto err_1
+endswitch
+
+querybox /l2 "輸入 %code_def 碼的字" 請輸入要查詢的字 (最多一字) ： %%char
+
+if %char. == . goto err_2
+if %@len[%char] == 1 goto err_3
+
+set fileid=%@fileopen[%cpath%cp_950.nls,read,b]
+if %fileid == -1 goto err_5
+
+set c_l=%@ascii[%@left[1,%char]]
+set c_r=%@ascii[%@right[1,%char]]
+
+goto %code_def
+
+:Big5
+if %c_l lt 129 .OR. %c_l == 255 goto err_6
+if %c_r lt 64 .OR. %c_r == 255 goto err_6
+if %c_r gt 126 .AND. %c_r lt 161 goto err_6
+set b5=%@convert[10,16,%@eval[%c_l*256+%c_r]]
+set pt=%@fileseek[%fileid,%@eval[1250+(%c_l-129)*512+(%c_r-64)*2],0]
+set uc=%@format[02,%@convert[10,16,%@ascii[%@fileread[%fileid,1]]]]
+set uc=%@format[04,%@convert[10,16,%@ascii[%@fileread[%fileid,1]]]%uc]
+goto display
+
+:Unicode
+set uc=%@format[04,%@convert[10,16,%@eval[%c_l*256+%c_r]]]
+set m=0
+set s=0
+set l=2
+gosub get_cp_code
+set s=2
+set l=1
+gosub get_cp_code
+set s=3
+gosub get_cp_code
+set b5=%@format[04,%@convert[10,16,%m]]
+goto display
+
+:get_cp_code
+set pt=%@eval[65634+(%m+%@convert[16,10,%@instr[%s,%l,%uc]])*2]
+set pt=%@fileseek[%fileid,%pt,0]
+set m=%@ascii[%@fileread[%fileid,1]]
+set m=%@eval[%@ascii[%@fileread[%fileid,1]]*256+%m]
+return
+
+:display
+set fileid=%@fileclose[%fileid]
+
+set a=Big5 內碼為「%b5」，%@char[13]Win 9x Unicode 碼為「%uc」。
+set b=%@char[13]%@char[13]PS：%@char[13]若以上其中一碼為 003F，則此
+set c=%@char[13]字在另一字集中並無對應!!
+msgbox ok "關於「%char」：" %a%%b%%c%
+goto quitend
+
+:err_1
+text
+使用法：code [B | b | U | u]
+
+請指定查詢時，輸入字之內碼種類!!
+
+B 或 b：Big-5 內碼
+U 或 u：Unicode 碼
+endtext
+goto quitend
+
+:err_2
+echo 未指定可供查詢之字!!
+goto quitend
+
+:err_3
+echo 不接受 ASCII 字碼查詢!!
+goto quitend
+
+:err_4
+echo CP_950.NLS 不存在 (目前目錄、本程式所在目錄、%_winsysdir\)，故無法查詢!!
+goto quitend
+
+:err_5
+echo %cpath%CP_950.NLS 無法開啟，故無法查詢!!
+goto quitend
+
+:err_6
+echo 您輸入的不是 Big5 碼的字，故無法查詢!!
+goto quitend
+
+:err_7
+echo Sorry ... 目前只開放 Take Command/32 v3.01 以上版本才可執行。
+goto quitend
+
+:quitend
+setdos /x0
+loadbtm off
+endlocal
+
+:none4dos

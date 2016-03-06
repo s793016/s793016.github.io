@@ -1,0 +1,26 @@
+[Version]
+Signature=$Chicago$
+SetupClass=BASE
+Compatible=1
+
+[SourceDisksNames]
+1="NewTTF, Setup Disk #1",,0
+
+[SourceDisksFiles]
+MINGLIU.TTC=1
+KAIU.TTF=1
+
+[DestGrp]
+MINGLIU.TTC
+KAIU.TTF
+
+[File2Del]
+TTFCACHE
+
+[DestinationDirs]
+DestGrp=20
+File2Del=10
+
+[DefaultInstall]
+DelFiles=File2Del
+Copyfiles=DestGrp
